@@ -2,35 +2,29 @@
 using namespace std;
 
 int main() {
+    int maxV = 1000;
     long long N, W; cin >> N >> W;
-    long long w[N+1], v[N+1];
-    for (int i=1; i<=N; i++) {
-        cin >> w[i] >> v[i];
-    }
-    
-    int maxV = 100000;
-    long long dp[N+1][maxV+1];
-    for (int i=0; i<=N; i++) {
-        for (int j=0; j<=maxV; j++) {
-            dp[i][j] = W * 10LL;
-        }
+    int w[N+1], v[N+1]; for (int i=1; i<=N; i++) cin >> w[i] >> v[i];
+    long long dp[N+1][maxV * N + 1];
+    dp[0][0] = 0;
+    for (int i=1; i<=maxV * N; i++) {
+        dp[0][i] = W * 100LL;
     }
 
-    dp[0][0] = 0;
     for (int i=1; i<=N; i++) {
-        for (int j=0; j<=maxV; j++) {
-            if (v[i] > j) {
-                dp[i][j] = dp[i-1][j];
+        for (int j=0; j <= maxV * N; j++) {
+            if (j >= v[i]) {
+                dp[i][j] = min(dp[i-1][j], dp[i-1][j-v[i]] + w[i]);
             } else {
-                dp[i][j] = min(dp[i-1][j], dp[i-1][j-v[i]]+w[i]);            
+                dp[i][j] = dp[i-1][j];
             }
         }
     }
 
-    for (int i=maxV; i >= 0; i--) {
-        if (dp[N][i] <= W) {
-            cout << i << endl;
-            break;
-        }
+    int ans = 0;
+    for (int i=0; i <= maxV * N; i++) {
+        if (dp[N][i] <= W) ans = i;
     }
+
+    cout << ans << endl;
 }
